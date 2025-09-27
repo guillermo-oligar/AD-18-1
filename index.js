@@ -1,3 +1,5 @@
+const endPoint = "https://reqres.in/api/unknown";
+const apiKey = "reqres-free-v1";
 const itemsContainer = document.querySelector("#list-items")
 
 function addItem(item) {
@@ -28,13 +30,36 @@ function addItem(item) {
   itemsContainer.append(colourCardBreak)
 }
 
-function fetchColorsList() {
+async function fetchColorsList(){
+  try{
+  //PETICION  
+    const response = await fetch(endPoint, {headers: {"x-api-key": apiKey}
+  })
+  //CONVERTIR PETICION
+    const data = await response.json();
+    localStorage.setItem("ColorsList",JSON.stringify(data.data)); //data es el objeto completo, mientras que data.data selecciona el array 'data' con los colores.
+    //console.log(data.data) para verificar que es el array de colores.
+    data.data.forEach(addItem);
   
+  } catch(error){
+  console.log(error)
 }
+} 
 
 function loadColorsFromStorage() {
-  
+  const storedColors = localStorage.getItem("ColorsList");
+  if(storedColors){
+    const colorsArry = JSON.parse(storedColors);
+    colorsArry.forEach(addItem)
+  }
 }
 
-fetchColorsList()
-loadColorsFromStorage()
+
+const storedColors = localStorage.getItem("ColorsList");
+if(storedColors){
+  loadColorsFromStorage();
+} else {
+  fetchColorsList();
+}
+ 
+
